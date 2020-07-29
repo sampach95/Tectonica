@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Peña de Bernal</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+	<link rel="stylesheet" href="leaflet-elevation.css" />
+			<script type="text/javascript" src="geology.js"></script>
+			<script type="text/javascript" src="contact.js"></script>
+			<script type="text/javascript" src="DRAPE.js"></script>
+			<script type="text/javascript" src="DRAPE.js"></script>
+    <link rel="stylesheet" href="src/L.Control.Sidebar.css" />
+    <!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.ie.css" /><![endif]-->
+
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+        }
+
+        .lorem {
+            font-style: italic;
+            color: #AAA;
+        }
+
+        body > #sidebar {
+            display: none;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div id="sidebar">
+        <h1>Práctica de Campo de Tectónica</h1>
+
+        <p>Sierra Gorda de Querétaro y Peña de Bernal, Querétaro</p>
+
+        <p><b>1. INTRODUCCIÓN</b></p>
+
+        <p style="text-align:justify;">
+		La geología de México es una expresión clara de la tectónica y sus consecuencias, 
+		desde las unidades más antiguas reportadas hasta los límites tectónicos actuales. 
+		En diversas regiones del país es posible apreciar la evolución cortical de distintos
+		periodos geológicos, tal es el caso de la región que comprende la Sierra Gorda de
+		Querétaro.
+		</p>
+		
+		<p style="text-align:justify;">
+		 En esta práctica de campo se visitarán regiones y afloramientos clave que han permitido
+		 conocer parte de la evolución tectónica del centro de México desde el Jurásico-Triásico
+		 hasta el Mioceno (Fitz-Díaz et al., 2018). En el recorrido se visitarán afloramientos del
+		 complejo El Chilar, Fm. San Juan de la Rosa, Fm. Peña Azul, Fm. Soyatal, Fm. Tamaulipas,
+		 Fm. Trancas y el domo riolítico de la Peña de Bernal. Cabe mencionar que dichas unidades
+		 geológicas presentan relaciones de contacto que son expresiones claras de la actividad 
+		 tectónica en distintos periodos, lo que permitirá desarrollar una dinámica de aprendizaje
+		 a partir de observar las rocas y sus estructuras en el afloramiento hasta su asociación a
+		 gran escala.
+		</p>
+		 
+		<p style="text-align:justify;">
+		 La práctica se realizará durante 3 días, del 27 al 28 de febrero de 2020, en las inmediaciones
+		 de los poblados principales de Cadereyta de Montes, San Joaquín y Bernal, Querétaro (Figura 1).
+		 El acceso al área de la práctica se logra tomando, desde Ciudad Universitaria, el periférico hasta
+		 la autopista a Querétaro y desviándose en San Juan del Río hacia Ezequiel Montes, y finalmente con
+		 desviación rumbo a Cadereyta, Qro. Asimismo, visitando por carretera, hacia el norte, los poblados
+		 de San José de la Rosa, El Jabalí y El Terrero. Posteriormente, el día siguiente el traslado es por
+		 la carretera Federal No. 120 hacia San Joaquín, visitando algunos afloramientos sobre carretera y en
+		 las inmediaciones del poblado El Doctor. Y al finalizar la práctica, la ruta de regreso será tomando
+		 la carretera Federal No. 120 de San Joaquín a Bernal y ulteriormente la autopista Querétaro en el 
+		 tramo San Juan del Río-México.
+		</p>
+		 
+			<img src="img/tectonica1.jpeg" alt="Figura 1" />
+			<p>Figura 1.</p>
+    </div>
+
+    
+	<div id="map"></div>
+
+   
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="src/L.Control.Sidebar.js"></script>
+
+    <script>
+       var map = L.map('map', {
+		center:[20.83748 , -99.71396],
+		zoom: 11,//zoom que se muestra por defecto al cargar el mapa, se expresa en númers enteros
+		inertia: false,
+
+			maxZoom: 20,//zoom máximo y mímimo permitido para el usuario del mapa
+			minZoom: 8,
+		});
+		
+		//Inicializamos la escala del mapa, desactivamos la escala imperial declarando la variable como "false"
+
+		var scale = L.control.scale({
+	'imperial':false
+	});
+	
+	scale.addTo(map);
+	
+//Estilos para algunas capas, caracteristicas cartográficas, que apareceran en nuestro mapa para la capa de contactos.
+		var contact_style = {
+		fillcolor:0,
+		color: "#000000",
+		weight: 2,
+		opacity: 1,
+		fillOpacity: 0
+		};
+	
+	
+//Capas Base, rásters que incluyen información topográfica general. 
+		var osm = L.tileLayer('http://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		{attribution: 'Map Data &copy; OpenStreetMap contributors'
+		});
+		
+		osm.addTo(map);
+  
+		var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+		maxZoom: 17,
+		attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+		});
+		
+		topo.addTo(map);
+	
+	//Inicializamos el controlador, que nos permitirá navegar en el mapa, y activar y desctivar las capas.
+
+var basemaps = {
+		"OSM": osm,
+		"Topografía": topo,										
+		};
+
+L.control.layers(basemaps).addTo(map);
+
+        var sidebar = L.control.sidebar('sidebar', {
+            closeButton: true,
+            position: 'left'
+        });
+        map.addControl(sidebar);
+
+        setTimeout(function () {
+            sidebar.show();
+        }, 500);
+
+        var marker = L.marker([20.801117, -99.914268]).addTo(map).on('click', function () {
+            sidebar.setContent(
+			
+			'<h1>Modelo 3D</h1> <iframe title="A 3D model" width="400" height="480" src="https://sketchfab.com/models/55603dbe91b3435bab6ffed6a36ac534/embed?autostart=1&amp;ui_controls=1&amp;ui_infos=1&amp;ui_inspector=1&amp;ui_stop=1&amp;ui_watermark=1&amp;ui_watermark_link=1" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>'
+			)
+			.show();
+        });
+		
+		var marker1 = L.marker([20.86114, -99.785305]).addTo(map).on('click', function () {
+            sidebar.setContent('<h1>Viernes 27 de marzo de 2020.</h1><h2>Primer Afloramiento</h2>Orillas del poblado El Jabalí, visita a los primeros afloramientos en arroyo (14Q 418307 mE / 2306980 mN).').show();
+        });
+		
+		var marker2 = L.marker([20.77543, -99.77069]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Viernes 27 de marzo de 2020.</h1><h2>Segundo Afloramiento</h2>Arroyo a un costado de San Juan de la Rosa, visita la segunda sección de afloramientos (14Q 419782 mE / 2297486 mN).').show();
+        });
+		
+		var marker3 = L.marker([20.89791, -99.51015]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Sábado 28 de febrero de 2020.</h1><h2>Tercer Afloramiento</h2>Pliegues de la Fm. Tamaulipas (1Q 446944 mE / 2310934 mN) <img src="img/tamaulipas.jpg" alt="Fm. Tamaulipas" /> ').show();
+        });
+		
+		var marker4 = L.marker([20.89872, -99.48312]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Sábado 28 de febrero de 2020.</h1><h2>Cuarto Afloramiento</h2>Pliegue “El Piñón” de Fm. Trancas (14Q 449755 mE / 2311015 mN) <img src="img/trancas.jpg" alt="Pliegue El Piñon" />').show();
+        });
+		
+		var marker5 = L.marker([20.85597, -99.58852]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Sábado 28 de febrero de 2020.</h1> <h2>Quinto Afloramiento</h2>poblado El Doctor, visita del 5to afloramiento (14Q 438776 mE / 2306320 mN). <img src="img/doctor.jpg" alt="Fm. El Doctor" />').show();
+        });
+		
+		var marker6 = L.marker([20.765841, -99.94882]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Domingo 29 de febrero de 2020.</h1><h2>Sexto Afloramiento</h2>Peña de Bernal costado norte, San José de la Cal. Visita de 6to afloramiento (14Q 401233 mE / 2296523 mN).').show();
+        });
+		
+		var marker7 = L.marker([20.74625, -99.94663]).addTo(map).on('click', function () {
+        sidebar.setContent('<h1>Domingo 29 de febrero de 2020.</h1><h2>Séptimo Afloramiento</h2>Visita a la Peña de Bernal. Último afloramiento (14Q 401449 mE / 2294354 mN).').show();
+        });
+		
+		
+        map.on('click', function () {
+            sidebar.hide();
+        })
+
+        sidebar.on('show', function () {
+            console.log('Sidebar will be visible.');
+        });
+
+        sidebar.on('shown', function () {
+            console.log('Sidebar is visible.');
+        });
+
+        sidebar.on('hide', function () {
+            console.log('Sidebar will be hidden.');
+        });
+
+        sidebar.on('hidden', function () {
+            console.log('Sidebar is hidden.');
+        });
+
+        L.DomEvent.on(sidebar.getCloseButton(), 'click', function () {
+            console.log('Close button clicked.');
+        });
+		
+
+
+
+//Capas GeoJSON, archivos vectoriales con información geológica de inte´res en formato json.
+	//Capa Vectoríal con la Geología de la zona. 
+		var geology = L.geoJson(geology, {//Utilizamos la funcion "switch" para categorizar cada litología. 
+			style:function(feature){
+			switch (feature.properties.CLAVE){
+				case 'Qhoal': return {color:'#fff5dd',fillOpacity: .5};//Colores en HTML
+				case 'Qhoco': return {color:'#f7ece1',fillOpacity: .5};			
+				case 'TplQptB': return {color:'#bf9487',fillOpacity: .5};
+				case 'TplQptCgp-Ar': return {color:'#eedfb3',fillOpacity: .5};
+				case 'TeGd-D': return {color:'#ed1c24',fillOpacity: .5};
+				case 'TeoCgp': return {color:'#d8e9b9',fillOpacity: .5}; 
+				case 'TmplA-B': return {color:'#fbc9bc',fillOpacity: .5};
+				case 'TplA-Da': return {color:'#e4c19b',fillOpacity: .5};
+				case 'TplR-TR': return {color:'#f9b6ac',fillOpacity: .5};
+				case 'TplTR-TDa': return {color:'#f7b9d4',fillOpacity: .5};
+				case 'ToR-TR': return {color:'#e1a49c',fillOpacity: .5};
+				case 'KapceCz-Bro': return {color:'#00ac4e',fillOpacity: .5};	
+				case 'KiCz-Lu': return {color:'#5f7641',fillOpacity: .5};
+				case 'KsLu-Cz': return {color:'#698c42',fillOpacity: .5};
+				case 'JtKvLu-Cz': return {color:'#76cdd6',fillOpacity: .5};				
+			}},
+			onEachFeature: function( feature, layer ){
+      		layer.bindPopup( "<strong>" + "LITOLOGÍA:" + "</strong><br/>"+ feature.properties.LITOLOGIA)
+			//PopUp (Letrero) que se muestra al dar click en cada área de una litología particular y 
+			//despliega la información que decidamos colocar según nuestra tabla de atributos. 
+		}
+		}).addTo(map);
+		
+	//Capa Vectorial con los Contactos entre litologías
+		var contact = L.geoJson(contact,{
+		style: contact_style,
+		onEachFeature: function( feature, layer ){
+		layer.bindPopup( "")}
+		}).addTo (map);
+		
+
+		
+    </script>
+	
+	<div id="elevation-div"></div>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script type="text/javascript" src="leaflet-elevation.js"></script>
+	<script>
+	// Estilo de línea para la línea de seccion
+
+var myStyle = {
+		    "color": "#000000",
+		    "weight": 5,
+			"opacity": 1,
+		};
+
+//Inicializamos el pluggin para mostrar en el mapa el perfil de elevación. 
+		var el = L.control.elevation({
+  			position: "bottomright",
+            theme: "steelblue-theme", //default: lime-theme
+            useHeightIndicator: true, //if false a marker is drawn at map position
+            interpolation: d3.curveLinear, //see https://github.com/d3/d3/wiki/
+            collapsed: false, //collapsed mode, show chart on click or mouseover
+            detachedView: true, //if false the chart is drawn within map container
+            elevationDiv: "#elevation-div", // (detached) elevation chart container
+			});
+		el.addTo(map);
+		
+//Cargamos al mapa el archivo Json con la ruta, línea, o caminamiento que contiene la información topografica
+//necesaria para visualizar las elevaciones del perfil. 
+		var ggeojson = L.geoJson(ggeojson,{
+			style:myStyle,
+		    onEachFeature: el.addData.bind(el)
+		}).addTo(map);
+	</script>
+</body>
+</html>
